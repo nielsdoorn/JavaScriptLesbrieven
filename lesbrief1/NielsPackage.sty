@@ -1,0 +1,86 @@
+% Niels Doorn template
+\ProvidesPackage{NielsPackage}
+
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{palatino}
+
+\usepackage[dutch]{babel}
+\usepackage{lastpage}
+\usepackage[pdftex]{graphicx}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\RequirePackage[calcwidth]{titlesec}
+\RequirePackage{color}
+\usepackage{fix-cm}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{courier}
+%\usepackage[nonumberlist,acronym,acronymlists={main,acronym2},section=section,numberedsection=nolabel]{glossaries}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage[numbers]{natbib}
+\usepackage{tikz}
+%\usepackage{parskip}
+\usepackage{textcomp}
+
+\usepackage[bookmarks=true,pdftex,bookmarksopen=true,bookmarksnumbered=true,pdfborder={0 0 0 0}]{hyperref}
+
+
+\lstset{
+        basicstyle=\footnotesize\ttfamily, % Standardschrift
+        %numbers=left,               % Ort der Zeilennummern
+        numberstyle=\tiny,          % Stil der Zeilennummern
+        %stepnumber=2,               % Abstand zwischen den Zeilennummern
+        numbersep=5pt,              % Abstand der Nummern zum Text
+        tabsize=2,                  % Groesse von Tabs
+        extendedchars=true,         %
+        breaklines=true,            % Zeilen werden Umgebrochen
+        keywordstyle=\bfseries,
+				commentstyle=\em\color{gray},
+        frame=b,         
+%        keywordstyle=[1]\textbf,    % Stil der Keywords
+%        keywordstyle=[2]\textbf,    %
+%        keywordstyle=[3]\textbf,    %
+%        keywordstyle=[4]\textbf,   \sqrt{\sqrt{}} %
+        stringstyle=\bfseries\color{gray}, % Farbe der String
+        showspaces=false,           % Leerzeichen anzeigen ?
+        showtabs=false,             % Tabs anzeigen ?
+        xleftmargin=17pt,
+        framexleftmargin=17pt,
+        framexrightmargin=5pt,
+        framexbottommargin=4pt,
+        %backgroundcolor=\color{lightgray},
+        showstringspaces=false      % Leerzeichen in Strings anzeigen ?        
+}
+\lstloadlanguages{% Check Dokumentation for further languages ...
+         %[Visual]Basic
+         %Pascal
+         %C
+         %C++
+         XML,
+         HTML,
+         Java,
+         PHP
+}
+\usepackage{caption}
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{\colorbox[cmyk]{0.43, 0.35, 0.35,0.01}{\parbox{\textwidth}{\hspace{15pt}#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white, singlelinecheck=false, margin=0pt, font={bf,footnotesize}}
+
+
+% diverse new en renews
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\renewcommand{\chaptermark}[1]{\markboth{\chaptername\ \thechapter.\ #1}{}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+
+\definecolor{seccol}{rgb}{0.4,0.4,0.4}
+	\titleformat{\chapter}{\bfseries}{\fontsize{24}{24}\selectfont\color{seccol}\thechapter}{0pt}{\linebreak\huge\raggedleft}[{\titlerule[0.5pt]}]
+
+
+\renewcommand{\sectionmark}[1]{%
+	\markboth{#1}{}}

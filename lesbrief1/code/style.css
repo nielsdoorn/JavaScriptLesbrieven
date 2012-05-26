@@ -1,0 +1,23 @@
+@charset "UTF-8";
+/* CSS Document */
+
+@import url(http://fonts.googleapis.com/css?family=Press+Start+2P);
+
+html {
+	background: #f06;
+	background: -webkit-linear-gradient(45deg, #f06, yellow);
+	min-height: 100%;
+}
+
+#blokje {
+  background-color: white;
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  width: 250px;
+  height: 150px;
+  line-height: 150px;
+  text-align: center;
+  font-family:'Press Start 2P';
+  border-radius: 20px;
+}

@@ -1,0 +1,39 @@
+@charset "UTF-8";
+/* CSS Document */
+
+@import url(http://fonts.googleapis.com/css?family=Press+Start+2P);
+
+html {
+	background: #f06;
+	background: -webkit-linear-gradient(45deg, #f06, yellow);
+	min-height: 100%;
+}
+
+#container {
+	width: 870px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.blokje {
+  background-color: white;
+  float:left;
+  width: 250px;
+  height: 150px;
+  line-height: 150px;
+  text-align: center;
+  font-family:'Press Start 2P';
+  border-radius: 20px;
+  margin: 20px;
+  box-shadow: 10px 10px 5px rgba(8,8,8,0.3);
+}
+
+.blokje:hover {
+	background-color: #3CF;
+}
+
+#speelplaats {
+	width: 800px;
+	height: 640px;
+	background-color: #3CF;
+}
