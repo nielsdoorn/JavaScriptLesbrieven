@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+
+<!-- Created with Ai->Canvas Export Plug-In Version 1.0 (Mac) -->
+<!-- By Mike Swanson (http://blogs.msdn.com/mswanson/)        -->
+<!-- and MIX Online  (http://visitmix.com/)                   -->
+
+<html lang="en">
+ <head>
+  <meta charset="UTF-8" />
+  <title>planeCanvas</title>
+  <script>
+
+    function init() {
+
+      var canvas = document.getElementById("canvas");
+      var ctx = canvas.getContext("2d");
+
+      draw(ctx);
+    }
+
+    function draw(ctx) {
+
+      var gradient;
+
+      // layer1/Group
+      ctx.save();
+
+      // layer1/Group/Path
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(0.8, 22.0);
+      ctx.lineTo(5.4, 17.3);
+      ctx.lineTo(3.6, 0.6);
+      ctx.lineTo(12.6, 1.8);
+      ctx.lineTo(19.4, 15.5);
+      ctx.lineTo(35.8, 14.2);
+      ctx.lineTo(41.7, 7.4);
+      ctx.lineTo(53.5, 5.5);
+      ctx.lineTo(60.0, 13.1);
+      ctx.lineTo(82.7, 17.5);
+      ctx.lineTo(86.4, 22.1);
+      ctx.lineTo(83.6, 26.8);
+      ctx.lineTo(59.4, 27.3);
+      ctx.lineTo(28.7, 28.0);
+      ctx.lineTo(5.7, 25.4);
+      ctx.lineTo(0.8, 22.0);
+      ctx.closePath();
+      ctx.fillStyle = "rgb(236, 236, 237)";
+      ctx.fill();
+      ctx.stroke();
+
+      // layer1/Group/Path
+      ctx.beginPath();
+      ctx.moveTo(36.3, 23.7);
+      ctx.lineTo(34.6, 20.8);
+      ctx.lineTo(36.3, 17.8);
+      ctx.lineTo(54.1, 18.0);
+      ctx.lineTo(57.9, 20.8);
+      ctx.lineTo(54.1, 23.5);
+      ctx.lineTo(36.3, 23.7);
+      ctx.closePath();
+      ctx.fillStyle = "rgb(245, 245, 246)";
+      ctx.fill();
+      ctx.stroke();
+
+      // layer1/Group/Path
+      ctx.beginPath();
+      ctx.moveTo(89.4, 22.6);
+      ctx.bezierCurveTo(89.4, 29.5, 88.8, 35.1, 88.0, 35.1);
+      ctx.bezierCurveTo(87.2, 35.1, 86.6, 29.5, 86.6, 22.6);
+      ctx.bezierCurveTo(86.6, 15.6, 87.2, 10.0, 88.0, 10.0);
+      ctx.bezierCurveTo(88.8, 10.0, 89.4, 15.6, 89.4, 22.6);
+      ctx.closePath();
+      gradient = ctx.createLinearGradient(86.6, 22.6, 89.4, 22.6);
+      gradient.addColorStop(0.00, "rgb(0, 0, 0)");
+      gradient.addColorStop(0.25, "rgb(0, 0, 0)");
+      gradient.addColorStop(1.00, "rgb(0, 0, 0)");
+      ctx.fillStyle = gradient;
+      ctx.fill();
+      ctx.stroke();
+
+      // layer1/Group/Path
+      ctx.beginPath();
+      ctx.moveTo(40.2, 13.9);
+      ctx.lineTo(43.0, 9.9);
+      ctx.lineTo(53.2, 8.6);
+      ctx.lineTo(57.9, 13.3);
+      ctx.lineTo(40.2, 13.9);
+      ctx.closePath();
+      ctx.fillStyle = "rgb(0, 157, 224)";
+      ctx.fill();
+      ctx.stroke();
+
+      // layer1/Group/Path
+      ctx.beginPath();
+      ctx.moveTo(45.5, 13.6);
+      ctx.lineTo(45.5, 9.3);
+      ctx.stroke();
+
+      // layer1/Group/Path
+      ctx.beginPath();
+      ctx.moveTo(53.2, 13.3);
+      ctx.lineTo(50.7, 8.6);
+      ctx.stroke();
+
+      // layer1/Group/ND0
+      ctx.font = "5.0px 'Myriad Pro'";
+      ctx.fillStyle = "rgb(0, 0, 0)";
+      ctx.fillText("ND0", 6.7, 13.0);
+      ctx.restore();
+      ctx.restore();
+    }
+  </script>
+ </head>
+ <body onload="init()">
+   <canvas id="canvas" width="90" height="36"></canvas>
+ </body>
+</html>
