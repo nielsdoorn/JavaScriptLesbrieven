@@ -3,9 +3,9 @@
 // variabelen
 var canvas;
 // het x coordinaat van het vliegtuig
-var x = 300;
+var x = 400;
 // het y coordinaat van het vliegtuig
-var y = 260;
+var y = 320;
 
 yVerplaatsing = 0.0;
 xVerplaatsing = 0.0;
@@ -15,7 +15,7 @@ var speed = 10.0;
 
 // achtergrondplaatje wordt onderaan getekend
 var bgOffsetX = 0;
-var bgOffsetY = -800;
+var bgOffsetY = -1100;
 var bgImage = new Image();
 
 // welke toets is ingedrukt?
@@ -79,8 +79,21 @@ function bepaalAchtergrondPositie() {
     }
 	if (bgOffsetY > 0) {
 		bgOffsetY = 0;
+		
+		
+		// vliegtuigje naar boven
+		y -= yVerplaatsing;
+		if (y < 20) {
+			y = 20;
+		}
 	} else if (bgOffsetY < -1280) {
 		bgOffsetY = -1280;
+		
+		// vliegtuigje naar onder
+		y -= yVerplaatsing;
+		if (y > 620) {
+			y = 620;
+		}
 	}
 }
 
