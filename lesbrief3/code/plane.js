@@ -2,9 +2,9 @@
 
 // variabelen
 var canvas;
-// het x coordinaat van de auto
+// het x coordinaat van het vliegtuig
 var x = 300;
-// het y coordinaat van de auto
+// het y coordinaat van het vliegtuig
 var y = 260;
 
 yVerplaatsing = 0.0;
@@ -12,21 +12,23 @@ xVerplaatsing = 0.0;
 
 // initiele snelheid, 0 = stilstand
 var speed = 10.0;
+
 // achtergrondplaatje wordt onderaan getekend
 var bgOffsetX = 0;
 var bgOffsetY = -800;
 var bgImage = new Image();
 
+// welke toets is ingedrukt?
 var up = false;
 var down = false;
 var right = false;
 var left = false;
 
+// de hoek van het toestel
 var rotation = Math.PI / 2;
 
 function init() {	
-	console.log("init");
-	
+	console.log("init");	
 	// canvas met het id "game" opvragen uit HTML
 	canvas = document.getElementById("game");
 	// pijltjestoetsen afhandeling regelen...
@@ -37,7 +39,7 @@ function init() {
 }
 
 function initAnimation() {
-// animatie
+	// animatie
 	// vraag aan de browser om maximaal 60 fps te animeren
 	window.requestAnimFrame = (function(callback){
 		return window.requestAnimationFrame ||
@@ -52,28 +54,23 @@ function initAnimation() {
 	
 	(function animloop(){
 		requestAnimFrame(animloop);
-		changePosition();
-		draw();
+		
+		bepaalAchtergrondPositie();
+		bepaalVlieghoek();
+		tekenScherm();
 	})();
 }
 
-function changePosition() {
-	if (up) {
-		rotation -= 0.03;
-	} 
-	if (down) {
-		rotation += 0.03;
-	}
-	rotation = rotation % (Math.PI * 2);
-
+// bepaal de nieuwe positie van de achtergrond
+function bepaalAchtergrondPositie() {
 	beta = Math.PI - (Math.PI / 2) - rotation;
+	// dus daar is die sinus functie voor...
 	yVerplaatsing = Math.sin(beta) * speed;
 	xVerplaatsing = Math.sin(rotation) * speed;
-	//console.log(beta +" "+rotation+"  "+yVerplaatsing+" "+xVerplaatsing);
 	
+	// verplaats de achtergrond
 	bgOffsetY += yVerplaatsing;
-	bgOffsetX -= xVerplaatsing;
-	
+	bgOffsetX -= xVerplaatsing;	
 	if (bgOffsetX < -1600) {
 	  bgOffsetX = 0;
     }
@@ -87,25 +84,35 @@ function changePosition() {
 	}
 }
 
+// en bepaal de nieuwe hoek van het vliegtuig
+function bepaalVlieghoek() {
+	if (up) {
+		rotation -= 0.03;
+	} 
+	if (down) {
+		rotation += 0.03;
+	}
+	// de rotatie is altijd tussen de 0 en de 2 PI
+	rotation = rotation % (Math.PI * 2);
+}
+
 // het tekenen van het scherm
-function draw() {
+function tekenScherm() {
 	var ctx = canvas.getContext("2d");
  	// canvas leeg maken, het canvas is 800px breed en 640px hoog
 	ctx.clearRect(0, 0, 800, 640);
  	// teken de bewegende achtergrond
 	drawBackground(ctx);
-	// schrijf snelheid op het scherm omgerekend naar km/h op het canvas
-	//ctx.fillText("bgoffset y "+bgOffsetY+"\nrotation: "+rotation+" "+yVerplaatsing+" "+xVerplaatsing, 1, 10);
   	// bewaar deze situatie
 	ctx.save();
-	// transleer de context, zodat de auto op de juiste plaats wordt getekend
+	// transleer de context, zodat de vliegtuig op de juiste plaats wordt getekend
 	ctx.translate(x, y);
-	// teken de auto
-	
+	// roteren afhankelijk van de hoek
 	ctx.rotate(rotation - Math.PI / 2);
+	// nog een keer transleren om het midden van het vliegtuig te corrigeren
 	ctx.translate(-50, -30);
-	
-	drawCar(ctx);
+	// teken de vliegtuig
+	drawVliegtuigje(ctx);
 	
 	ctx.restore();
 }
@@ -149,45 +156,13 @@ function handleKeyUp(evt) {
 	}
 }
 
-
-function left() {
-	if (speed > 0) {
-		x-=speed/4;
-	}
-}
-
-function right() {
-	if (speed > 0) {
-		x+=speed/4;
-	}
-}
-
-function up() {
-	speed++;
-	if (speed > 40) {
-		speed = 40;
-	}
-}
-
-function down() {
-	speed--;
-	if (speed < 0) {
-		speed = 0;
-	}
-}
-
-
-// bewegende achtergrond tekenen
-// de afbeelding van de auto is 1280px hoog,
-// iedere keer wordt het plaatje verschoven,
-// en als helemaal tot bovenaan is verschoven 
-// opnieuw getekend
+// teken de achtergrond
 function drawBackground(ctx) {
 	ctx.drawImage(bgImage, bgOffsetX, bgOffsetY);
 }
 
-// auto tekenen
-function drawCar(ctx) {
+// vliegtuig tekenen
+function drawVliegtuigje(ctx) {
 	  var gradient;
 
       // layer1/Group
