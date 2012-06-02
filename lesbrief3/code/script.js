@@ -1,5 +1,3 @@
-// JavaScript Document
-
 // variabelen
 var canvas;
 // het x coordinaat van de auto
@@ -12,9 +10,6 @@ var speed = 3;
 var bgOffset = -640;
 var bgImage = new Image();
 
-// init aanroepen als HTML is geladen
-window.onload = init;
-
 function init() {	
 	// canvas met het id "game" opvragen uit HTML
 	canvas = document.getElementById("game");
@@ -24,23 +19,26 @@ function init() {
 	bgImage.src ="road.png";
 }
 
-// animatie
-// vraag aan de browser om maximaal 60 fps te animeren
-window.requestAnimFrame = (function(callback){
-	return window.requestAnimationFrame ||
-	window.webkitRequestAnimationFrame ||
-	window.mozRequestAnimationFrame ||
-	window.oRequestAnimationFrame ||
-	window.msRequestAnimationFrame ||
-	function(callback){
-		window.setTimeout(callback, 1000 / 60);
-	};
-})();
+function initAnimation() {
+	// animatie
+	// vraag aan de browser om maximaal 60 fps te animeren
+	window.requestAnimFrame = (function(callback){
+		return window.requestAnimationFrame ||
+		window.webkitRequestAnimationFrame ||
+		window.mozRequestAnimationFrame ||
+		window.oRequestAnimationFrame ||
+		window.msRequestAnimationFrame ||
+		function(callback){
+			window.setTimeout(callback, 1000 / 60);
+		};
+	})();
+	
+	(function animloop(){
+		requestAnimFrame(animloop);	
+		draw();
+	})();
+}
 
-(function animloop(){
-	requestAnimFrame(animloop);
-	draw();
-})();
 
 
 // het tekenen van het scherm

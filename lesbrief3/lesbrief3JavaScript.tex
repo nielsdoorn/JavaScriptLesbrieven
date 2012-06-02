@@ -46,7 +46,7 @@ Als de auto sneller gaat, begint de auto ook te trillen. Meer `spel' elementen z
 Het spel bestaat uit HTML, CSS en JavaScript. Met name het JavaScript gedeelte is van belang voor het spel.
 
 \subsection*{HTML}
-In de HTML wordt net als in de vorige lesbrief een canvas tag gebruikt waar het spel op wordt getekend: 
+In de HTML wordt net als in de vorige lesbrief een canvas tag gebruikt waar het spel op wordt getekend. We gebruiken de `document ready' functie van jQuery om er voor te zorgen dat de HTML pagina volledig is geladen door de browser voordat we op het canvas gaan tekenen.
 
 \lstinputlisting{code/movingCar.html}
 
@@ -56,31 +56,34 @@ In de HTML wordt net als in de vorige lesbrief een canvas tag gebruikt waar het 
 \lstinputlisting{code/style.css}
 
 \subsection*{JavaScript}
-\noindent Het grootste gedeelte van het spel is de JavaScript. We behandelen de belangrijkste functies per stuk, de (bijna) complete code volgt daarna. Dat is de code inclusief de initialisatie functie en declaratie van variabelen et cetera.
+\noindent Het grootste gedeelte van het spel is de JavaScript. We behandelen de belangrijkste functies per stuk, de (bijna) complete code volgt daarna. Dat is de code inclusief de initialisatie functie en declaratie van variabelen.
 
-\subsubsection*{Animatie loop}
+\subsubsection*{De animatie loop}
 Voor actiespellen zoals dit is het belangrijk dat het scherm steeds opnieuw wordt opgebouwd, optimaal is het als dit met 60fps wordt gedaan. Het is afhankelijk van wat er allemaal moet gebeuren binnen het spel en de kracht van de computer of dat aantal van 60fps wordt gehaald. 
 
 In de JavaScript code zorgt de \textbf{requestAnimationFrame} functie hiervoor. Om er voor te zorgen dat dit in alle browsers werkt moet je gebruik maken van prefixes. Het belangrijkste stukje code is de \textbf{animLoop} functie, die wordt 60 keer per seconde aangeroepen en roept zelf weer de \textbf{draw} functie aan die het scherm op gaat bouwen:
 
 \begin{lstlisting}[numbers=none]
-// animatie
-// vraag aan de browser om maximaal 60 fps te animeren
-window.requestAnimFrame = (function(callback){
-	return window.requestAnimationFrame ||
-	window.webkitRequestAnimationFrame ||
-	window.mozRequestAnimationFrame ||
-	window.oRequestAnimationFrame ||
-	window.msRequestAnimationFrame ||
-	function(callback){
-		window.setTimeout(callback, 1000 / 60);
-	};
-})();
-
-(function animloop(){
-	requestAnimFrame(animloop);
-	draw();
-})();
+function initAnimation() {
+	// animatie
+	// vraag aan de browser om maximaal 60 fps te animeren
+	window.requestAnimFrame = (function(callback){
+		return window.requestAnimationFrame ||
+		window.webkitRequestAnimationFrame ||
+		window.mozRequestAnimationFrame ||
+		window.oRequestAnimationFrame ||
+		window.msRequestAnimationFrame ||
+		function(callback){
+			window.setTimeout(callback, 1000 / 60);
+		};
+	})();
+	
+	(function animloop(){
+		requestAnimFrame(animloop);	
+		// belangrijkste regel: `draw' wordt 60 keer per seconde aangeroepen om het scherm te tekenen!
+		draw();
+	})();
+}
 \end{lstlisting}
 
 \noindent De \textbf{animLoop} functie zorgt voor de animatie loop. Het belangrijkste wat in ons geval moet gebeuren is het tekenen van het scherm. De \textbf{draw} functie zorgt hiervoor. 
@@ -95,7 +98,7 @@ Door te transleren is het eenvoudiger om de auto te tekenen, de coordinaten bij 
 
 Op deze manier kunnen we ook roteren en transformeren. Voor dat we transleren, roteren of transformeren is het belangrijk om de context op te slaan om er voor te zorgen dat hetgene wat we al hebben getekend niet mee verschuift of draait. Dit doen we met de \textbf{ctx.save} functie.
 
-Als we de auto hebben getekend op het canvas roepen we tot slot een stukje `artificial intelligence' aan om de auto wat te laten trillen als hij sneller gaat.
+Als we de auto hebben getekend op het canvas roepen we tot slot een (onbelangrijk) stukje `artificial intelligence' aan om de auto wat te laten trillen als hij sneller gaat.
 
 \begin{lstlisting}[numbers=none]
 // het tekenen van het scherm
