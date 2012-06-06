@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<!-- Created with Ai->Canvas Export Plug-In Version 1.0 (Mac) -->
+<!-- By Mike Swanson (http://blogs.msdn.com/mswanson/)        -->
+<!-- and MIX Online  (http://visitmix.com/)                   -->
+
+<html lang="en">
+ <head>
+  <meta charset="UTF-8" />
+  <title>asteroids-canvas</title>
+  <script>
+
+    function init() {
+
+      var canvas = document.getElementById("canvas");
+      var ctx = canvas.getContext("2d");
+
+      draw(ctx);
+    }
+
+    function draw(ctx) {
+
+      // layer1/Guide
+      ctx.save();
+
+      // layer1/Guide
+
+      // layer1/Guide
+
+      // layer1/Group
+
+      // layer1/Group/Path
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(0.9, 16.0);
+      ctx.lineTo(9.5, 1.0);
+      ctx.lineTo(18.2, 16.0);
+      ctx.lineTo(0.9, 16.0);
+      ctx.closePath();
+      ctx.fillStyle = "rgb(255, 255, 255)";
+      ctx.fill();
+      ctx.stroke();
+
+      // layer1/Group/Path
+      ctx.beginPath();
+      ctx.moveTo(2.8, 19.4);
+      ctx.lineTo(0.9, 16.0);
+      ctx.lineTo(4.7, 16.0);
+      ctx.lineTo(2.8, 19.4);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // layer1/Group/Path
+      ctx.beginPath();
+      ctx.moveTo(16.3, 19.4);
+      ctx.lineTo(14.4, 16.0);
+      ctx.lineTo(18.3, 16.0);
+      ctx.lineTo(16.3, 19.4);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // layer1/Group/Path
+      ctx.beginPath();
+      ctx.moveTo(4.9, 9.0);
+      ctx.bezierCurveTo(4.9, 9.0, 9.7, 1.7, 14.1, 9.0);
+      ctx.stroke();
+      ctx.restore();
+      ctx.restore();
+    }
+  </script>
+ </head>
+ <body onload="init()">
+   <canvas id="canvas" width="20" height="21"></canvas>
+ </body>
+</html>

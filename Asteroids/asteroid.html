@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<!-- Created with Ai->Canvas Export Plug-In Version 1.0 (Mac) -->
+<!-- By Mike Swanson (http://blogs.msdn.com/mswanson/)        -->
+<!-- and MIX Online  (http://visitmix.com/)                   -->
+
+<html lang="en">
+ <head>
+  <meta charset="UTF-8" />
+  <title>asteroid</title>
+  <script>
+
+    function init() {
+
+      var canvas = document.getElementById("canvas");
+      var ctx = canvas.getContext("2d");
+
+      draw(ctx);
+    }
+
+    function draw(ctx) {
+
+      // layer1/Path
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(26.2, 90.7);
+      ctx.lineTo(0.5, 58.5);
+      ctx.lineTo(9.7, 18.4);
+      ctx.lineTo(46.8, 0.6);
+      ctx.lineTo(83.8, 18.4);
+      ctx.lineTo(93.0, 58.5);
+      ctx.lineTo(67.3, 90.7);
+      ctx.lineTo(26.2, 90.7);
+      ctx.closePath();
+      ctx.fillStyle = "rgb(255, 255, 255)";
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+  </script>
+ </head>
+ <body onload="init()">
+   <canvas id="canvas" width="94" height="92"></canvas>
+ </body>
+</html>
