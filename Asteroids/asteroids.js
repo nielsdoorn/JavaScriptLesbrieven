@@ -2,6 +2,9 @@
 const BIG = 60;
 const SMALL = 10;
 
+// snelheidsfactor van de raketten
+const ROCKET_SPEED = 8;
+
 // variabelen
 var canvas;
 // het x coordinaat van het ruimteschip
@@ -9,13 +12,14 @@ var x = 400;
 // het y coordinaat van het ruimteschip
 var y = 320;
 
+// richtingsvector spaceship
 var richtingsVector = [0.01, 0.4];
 
-// de hoek van het toestel
+// de hoek van het ruimteschip
 var rotation = 0;
 
 // de versnelling bij pijltje omhoog
-var acceleration = 0.08;
+var acceleration = 0.09;
 
 // welke toets is ingedrukt?
 var up = false;
@@ -80,12 +84,13 @@ function initAnimation() {
 
 function moveShip() {
 	if (left) {
-		rotation -= 0.08;
+		rotation -= 0.05;
 	} 
 	if (right) {
-		rotation += 0.08;
+		rotation += 0.05;
 	}
 	// de rotatie is altijd tussen de 0 en de 2 PI
+	// de modulo operator (%) zorgt hiervoor
 	rotation = rotation % (Math.PI * 2);
 	
 	if (up) {
@@ -95,13 +100,15 @@ function moveShip() {
 	} 
 
 	if (space) {
-		fire();
+		if (Math.round(Math.random() * 50) % 4 == 0) {
+			fire();
+		}
 	}
 	
 	x += richtingsVector[0];
 	y -= richtingsVector[1];
 	
-	// het ruimteship in beeld houden
+	// het ruimteschip in beeld houden
 	if (x < 0) {
 		x = 800;
 	} else if (x > 800) {
@@ -117,7 +124,7 @@ function moveShip() {
 function fire() {
 	if (rockets.length < 50 && health > 0) {
 		score--;
-		var rocketRotation = rotation + (Math.random() * 0.06) - 0.03;
+		var rocketRotation = rotation + (Math.random() * 0.06) - 0.02;
 		var rocket = [x, y, rocketRotation, false];
 		rockets.push(rocket);
 	}
@@ -127,10 +134,10 @@ function moveRockets() {
 	for (var i = 0; i < rockets.length; i++) {
 		var rocket = rockets[i];
 		beta = Math.PI - (Math.PI / 2) - rocket[2];
-		rocket[0] += Math.sin(rocket[2]) * 10;
-		rocket[1] -= Math.sin(beta) * 10;
+		rocket[0] += Math.sin(rocket[2]) * ROCKET_SPEED;
+		rocket[1] -= Math.sin(beta) * ROCKET_SPEED;
 		if (rocket[0] < 0 || rocket[0] > 800 || rocket[1] < 0 || rocket[1] > 640) {
-			// rocket left the screen...
+			// the rocket left the screen...
 			rocket[3] = true;
 		} 
 	}
@@ -164,7 +171,7 @@ function detectCollisions() {
 		if (health > 0) {
 			var distanceToSpaceShip = distance(asteroid[0], asteroid[1], x, y);
 			if (distanceToSpaceShip < asteroid[4] + 10) {
-				health -= 30;
+				health -= 99;
 				score -= 30000;
 				asteroid[5]--;
 			}
@@ -182,13 +189,6 @@ function detectCollisions() {
 			}
 		}
 	}
-}
-
-function distance(x1, y1, x2, y2) {
-	var a = Math.abs(x1 - x2);
-	var b = Math.abs(y1 - y2);
-	var c = Math.sqrt(Math.pow(a,2) + Math.pow(b,2));
-	return c;
 }
 
 function cleanUp() {
@@ -243,10 +243,9 @@ function drawRockets(ctx) {
 		ctx.save();
 		ctx.fillStyle = "red";
 		ctx.translate(rocket[0], rocket[1]);
-		ctx.beginPath();
-        ctx.moveTo(2,0);
-		ctx.arc(0,0,2,0,Math.PI*2,false);
-		ctx.stroke();
+		ctx.rotate(rocket[2]);
+		roundRect(ctx, -1, 0, 2, 14, 2);
+		//ctx.stroke();
 		ctx.fill();
 		ctx.restore();
 	}
@@ -257,8 +256,10 @@ function drawSpaceship(ctx) {
 	ctx.save();
 	// transleer de context, zodat de ruimteschip op de juiste plaats wordt getekend
 	ctx.translate(x, y);
+	
 	ctx.rotate(rotation);
 	// nog een keer transleren om het midden van het ruimteschip te corrigeren
+	
 	ctx.translate(-10, -10);
     ctx.save();
 	
@@ -312,6 +313,7 @@ function drawAsteroids(ctx) {
 		ctx.save();
 		ctx.translate(asteroid[0], asteroid[1]);
 		ctx.save();
+
 		ctx.beginPath();
         ctx.moveTo(asteroid[4],0);
 		ctx.arc(0,0,asteroid[4],0,Math.PI*2,false);
@@ -368,11 +370,29 @@ function handleKeyUp(evt) {
 		case 40:		// pijltje omlaag
 			down = false;
 			break;	
-		case 32:
+		case 32:		// spatie
 			space = false;
 			break;	
 	}
 }
 
+function distance(x1, y1, x2, y2) {
+	var a = Math.abs(x1 - x2);
+	var b = Math.abs(y1 - y2);
+	var c = Math.sqrt(Math.pow(a,2) + Math.pow(b,2));
+	return c;
+}
 
-
+function roundRect(ctx, x, y, width, height, radius) {
+	ctx.beginPath();
+	ctx.moveTo(x + radius, y);
+	ctx.lineTo(x + width - radius, y);
+	ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+	ctx.lineTo(x + width, y + height - radius);
+	ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+	ctx.lineTo(x + radius, y + height);
+	ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+	ctx.lineTo(x, y + radius);
+	ctx.quadraticCurveTo(x, y, x + radius, y);
+	ctx.closePath();     
+}
