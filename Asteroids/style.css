@@ -1,7 +1,7 @@
 @charset "UTF-8";
 /* CSS Document */
 html {
-	background: black;
+	background: grey;
 	min-height: 100%;
 }
 
@@ -13,5 +13,6 @@ html {
 #game {
 	width: 800px;
 	height: 640px;
-	background-color:white;
+	background-color:black;
+	//background-image:url(space.jpg);
 }

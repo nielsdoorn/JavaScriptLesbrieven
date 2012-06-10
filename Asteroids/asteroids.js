@@ -5,6 +5,8 @@ const SMALL = 10;
 // snelheidsfactor van de raketten
 const ROCKET_SPEED = 8;
 
+const EXPLOSION_SPEED = 16;
+
 // variabelen
 var canvas;
 // het x coordinaat van het ruimteschip
@@ -27,9 +29,12 @@ var down = false;
 var right = false;
 var left = false;
 var space = false;
+var shift = false;
 
 // rockets: een lijst met afgevuurde raketten
 var rockets = [];
+// explosion particles
+var explosions = [];
 // lijst met alle asteroids
 var asteroids = [];
 
@@ -45,6 +50,7 @@ function init() {
 	document.onkeyup = handleKeyUp;
 	
 	// aanmaken van de grote asteroids
+	asteroids = [];
 	for (var i = 0; i < 5; i++) {
 		var asteroid = [Math.random() * 800,
 						Math.random()*640,
@@ -74,6 +80,7 @@ function initAnimation() {
 		requestAnimFrame(animloop);
 		moveShip();
 		moveRockets();
+		moveExplosions();
 		moveAsteroids();
 		detectCollisions();
 		cleanUp();
@@ -84,10 +91,18 @@ function initAnimation() {
 
 function moveShip() {
 	if (left) {
-		rotation -= 0.05;
+		if (shift) {
+			rotation -= 0.1;
+		} else {
+			rotation -= 0.03;
+		}
 	} 
 	if (right) {
-		rotation += 0.05;
+		if (shift) {
+			rotation += 0.1;
+		} else {
+			rotation += 0.03;
+		}
 	}
 	// de rotatie is altijd tussen de 0 en de 2 PI
 	// de modulo operator (%) zorgt hiervoor
@@ -100,9 +115,9 @@ function moveShip() {
 	} 
 
 	if (space) {
-		if (Math.round(Math.random() * 50) % 4 == 0) {
+		//if (Math.round(Math.random() * 50) % 4 == 0) {
 			fire();
-		}
+		//}
 	}
 	
 	x += richtingsVector[0];
@@ -124,9 +139,30 @@ function moveShip() {
 function fire() {
 	if (rockets.length < 50 && health > 0) {
 		score--;
-		var rocketRotation = rotation + (Math.random() * 0.06) - 0.02;
+		var rocketRotation = rotation + (Math.random() * 0.08) - 0.04;
 		var rocket = [x, y, rocketRotation, false];
 		rockets.push(rocket);
+	}
+}
+
+function spread() {
+	if (health > 0) {
+		for (var i=0; i < 100; i++) {
+			var rocketRotation = i * ((Math.PI * 2) / 100);
+			var rocket = [x, y, rocketRotation, false];
+			rockets.push(rocket);
+		}
+	}
+}
+
+function explode(explosionX, explosionY) {
+	if (health > 0) {
+		var NUM_OF_PARTICLES = 20;
+		for (var i=0; i < NUM_OF_PARTICLES; i++) {
+			var explosionRotation = i * ((Math.PI * 2) / NUM_OF_PARTICLES);
+			var explosion = [explosionX, explosionY, explosionRotation, 10];
+			explosions.push(explosion);
+		}
 	}
 }
 
@@ -140,6 +176,16 @@ function moveRockets() {
 			// the rocket left the screen...
 			rocket[3] = true;
 		} 
+	}
+}
+
+function moveExplosions() {
+	for (var i = 0; i < explosions.length; i++) {
+		var explosion = explosions[i];
+		beta = Math.PI - (Math.PI / 2) - explosion[2];
+		explosion[0] += Math.sin(explosion[2]) * EXPLOSION_SPEED;
+		explosion[1] -= Math.sin(beta) * EXPLOSION_SPEED;
+		explosion[3]--;
 	}
 }
 
@@ -198,16 +244,18 @@ function cleanUp() {
 		if (asteroid[5] > 0) {
 			newAsteroids.push(asteroid);
 		} else if (asteroid[4] == BIG) {
-			// voeg nieuew, kleine asteroids toe
+			// voeg nieuwe, kleine asteroids toe
 			for (var j = 0; j < 40; j++) {
 				var newAsteroid = [asteroid[0],
 								asteroid[1],
 								(Math.random()*2) - 1,
 								(Math.random()*2) - 1,
 								SMALL,
-								Math.random() * 15];				
+								Math.random() * 8];				
 				newAsteroids.push(newAsteroid);				
 			}
+		} else {
+			explode(asteroid[0], asteroid[1]);
 		}
 	}
 	asteroids = newAsteroids;
@@ -219,6 +267,15 @@ function cleanUp() {
 		}
 	}
 	rockets = newRockets;
+	
+	var newExplosions = [];
+	for (var i=0; i < explosions.length; i++) {
+		var explosion = explosions[i];
+		if (explosion[3] > 0) {
+			newExplosions.push(explosion);
+		}
+	}
+	explosions = newExplosions;
 }
 
 // het tekenen van het scherm
@@ -227,6 +284,7 @@ function tekenScherm() {
  	// canvas leeg maken, het canvas is 800px breed en 640px hoog
 	ctx.clearRect(0, 0, 800, 640);
 	drawRockets(ctx);
+	drawExplosions(ctx);
 	drawAsteroids(ctx);
 	// teken de vliegtuig
 	if (health > 0) {
@@ -246,6 +304,22 @@ function drawRockets(ctx) {
 		ctx.rotate(rocket[2]);
 		roundRect(ctx, -1, 0, 2, 14, 2);
 		//ctx.stroke();
+		ctx.fill();
+		ctx.restore();
+	}
+}
+
+function drawExplosions(ctx) {
+	for (var i = 0; i < explosions.length; i++) {
+		var explosion = explosions[i];
+		ctx.save();
+		ctx.fillStyle = "yellow";
+		ctx.translate(explosion[0], explosion[1]);
+		ctx.beginPath();
+        ctx.moveTo(5,0);
+		ctx.arc(0,0,5,0,Math.PI*2,false);
+		ctx.closePath();
+		ctx.stroke();
 		ctx.fill();
 		ctx.restore();
 	}
@@ -319,10 +393,10 @@ function drawAsteroids(ctx) {
 		ctx.arc(0,0,asteroid[4],0,Math.PI*2,false);
 		ctx.stroke();
 		ctx.closePath();
-		if (asteroid[5] < 12) {
-			ctx.fillStyle = "white";
+		if (asteroid[5] < 5) {
+			ctx.fillStyle = "rgba(240,240,240,0.8)";
 		} else {
-			ctx.fillStyle = "rgba(60,60,60,0.3)";
+			ctx.fillStyle = "rgba(120,120,120,0.8)";
 		}
 		ctx.fill();
 		ctx.stroke();
@@ -350,7 +424,13 @@ function handleKeyDown(evt) {
 			break;
 		case 32:		// spatie
 			space = true;
-			break;			
+			break;	
+		case 16:		// shift
+			shift = true;
+			break;	
+		case 17:		// ctrl
+			spread();
+			break;	
     }
 }
 
@@ -372,7 +452,10 @@ function handleKeyUp(evt) {
 			break;	
 		case 32:		// spatie
 			space = false;
-			break;	
+			break;
+		case 16:		// shift
+			shift = false;
+			break;
 	}
 }
 
