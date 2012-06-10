@@ -160,7 +160,7 @@ function explode(explosionX, explosionY) {
 		var NUM_OF_PARTICLES = 20;
 		for (var i=0; i < NUM_OF_PARTICLES; i++) {
 			var explosionRotation = i * ((Math.PI * 2) / NUM_OF_PARTICLES);
-			var explosion = [explosionX, explosionY, explosionRotation, 10];
+			var explosion = [explosionX, explosionY, explosionRotation, 40];
 			explosions.push(explosion);
 		}
 	}
@@ -183,8 +183,8 @@ function moveExplosions() {
 	for (var i = 0; i < explosions.length; i++) {
 		var explosion = explosions[i];
 		beta = Math.PI - (Math.PI / 2) - explosion[2];
-		explosion[0] += Math.sin(explosion[2]) * EXPLOSION_SPEED;
-		explosion[1] -= Math.sin(beta) * EXPLOSION_SPEED;
+		explosion[0] += Math.sin(explosion[2]) * (explosion[3] / 10);
+		explosion[1] -= Math.sin(beta) * (explosion[3] / 10);
 		explosion[3]--;
 	}
 }
