@@ -14,6 +14,8 @@ var x = 400;
 // het y coordinaat van het ruimteschip
 var y = 320;
 
+var spreads = 5;
+
 // richtingsvector spaceship
 var richtingsVector = [0.01, 0.4];
 
@@ -52,12 +54,14 @@ function init() {
 	// aanmaken van de grote asteroids
 	asteroids = [];
 	for (var i = 0; i < 5; i++) {
-		var asteroid = [Math.random() * 800,
-						Math.random()*640,
-						(Math.random()*4) - 2,
-						(Math.random()*4) - 2,
-						BIG,
-						Math.random()*30];
+		var asteroid = [Math.random() * 800,			// 0 = x positie
+						Math.random() * 640,			// 1 = y positie
+						(Math.random() * 4) - 2,		// 2 = x vector
+						(Math.random() * 4) - 2,		// 3 = y vector
+						BIG,							// 4 = diameter
+						Math.random() * 30,				// 5 = sterkte
+						(Math.random() * 0.04) - 0.02,		// 6 = rotatie richting
+						Math.random() * Math.PI * 2];	// 7 = rotatie
 		asteroids.push(asteroid);				
 	}
 }
@@ -147,6 +151,7 @@ function fire() {
 
 function spread() {
 	if (health > 0) {
+		score -= 10000;
 		for (var i=0; i < 100; i++) {
 			var rocketRotation = i * ((Math.PI * 2) / 100);
 			var rocket = [x, y, rocketRotation, false];
@@ -192,8 +197,6 @@ function moveExplosions() {
 function moveAsteroids() {
 	for (var i=0; i < asteroids.length; i++) {
 		var asteroid = asteroids[i];
-		//	 				   x, y, xV, yV, size
-		// var asteroids = [[200,200,10,10,30]];
 		asteroid[0] += asteroid[2];
 		asteroid[1] += asteroid[3];
 		if (asteroid[0] - asteroid[4] > 800) {
@@ -206,6 +209,8 @@ function moveAsteroids() {
 		} else if (asteroid[1] + asteroid[4] < 0) {
 			asteroid[1] = 640;
 		}
+		asteroid[7] += asteroid[6];
+		asteroid[7] = asteroid[7] % (Math.PI * 2);
 	}
 }
 
@@ -217,9 +222,12 @@ function detectCollisions() {
 		if (health > 0) {
 			var distanceToSpaceShip = distance(asteroid[0], asteroid[1], x, y);
 			if (distanceToSpaceShip < asteroid[4] + 10) {
-				health -= 99;
-				score -= 30000;
+				health -= Math.round(asteroid[5] * 10);
 				asteroid[5]--;
+			} else if (distanceToSpaceShip < asteroid[4] + 20)  {
+				if (Math.round(Math.random() * 100) < 4) {
+					spread();
+				}
 			}
 		}
 		
@@ -243,19 +251,22 @@ function cleanUp() {
 		var asteroid = asteroids[i];
 		if (asteroid[5] > 0) {
 			newAsteroids.push(asteroid);
-		} else if (asteroid[4] == BIG) {
-			// voeg nieuwe, kleine asteroids toe
-			for (var j = 0; j < 40; j++) {
-				var newAsteroid = [asteroid[0],
-								asteroid[1],
-								(Math.random()*2) - 1,
-								(Math.random()*2) - 1,
-								SMALL,
-								Math.random() * 8];				
-				newAsteroids.push(newAsteroid);				
-			}
 		} else {
 			explode(asteroid[0], asteroid[1]);
+			if (asteroid[4] == BIG) {
+				// voeg nieuwe, kleine asteroids toe
+				for (var j = 0; j < 40; j++) {
+					var newAsteroid = [asteroid[0],
+									asteroid[1],
+									(Math.random()*2) - 1,
+									(Math.random()*2) - 1,
+									SMALL,
+									Math.random() * 8,
+									(Math.random()* 0.04) - 0.02,
+									Math.random() *  Math.PI * 2];				
+					newAsteroids.push(newAsteroid);				
+				}
+			}
 		}
 	}
 	asteroids = newAsteroids;
@@ -290,7 +301,7 @@ function tekenScherm() {
 	if (health > 0) {
 		drawSpaceship(ctx);
 	}
-	ctx.fillStyle = "black";
+	ctx.fillStyle = "white";
 	ctx.fillText("Score: " + score, 1, 10);
 	ctx.fillText("Health: " + health, 1, 20);
 }
@@ -299,7 +310,7 @@ function drawRockets(ctx) {
 	for (var i = 0; i < rockets.length; i++) {
 		var rocket = rockets[i];
 		ctx.save();
-		ctx.fillStyle = "red";
+		ctx.fillStyle = "yellow";
 		ctx.translate(rocket[0], rocket[1]);
 		ctx.rotate(rocket[2]);
 		roundRect(ctx, -1, 0, 2, 14, 2);
@@ -313,13 +324,14 @@ function drawExplosions(ctx) {
 	for (var i = 0; i < explosions.length; i++) {
 		var explosion = explosions[i];
 		ctx.save();
-		ctx.fillStyle = "yellow";
+		console.log((explosion[3] * (256 / 40)));
+		ctx.fillStyle = "rgb("+(Math.round(explosion[3] * (256 / 40))) +",0,0)";
 		ctx.translate(explosion[0], explosion[1]);
 		ctx.beginPath();
         ctx.moveTo(5,0);
 		ctx.arc(0,0,5,0,Math.PI*2,false);
 		ctx.closePath();
-		ctx.stroke();
+		//ctx.stroke();
 		ctx.fill();
 		ctx.restore();
 	}
@@ -350,8 +362,9 @@ function drawSpaceship(ctx) {
 	ctx.stroke();
 	
 	if (up) {
-	  ctx.fillStyle = "red";
-	  
+		ctx.save();
+	  ctx.fillStyle = "white";
+	  ctx.strokeStyle = "white";
 	  ctx.beginPath();
 	  ctx.moveTo(2.8, 19.4);
 	  ctx.lineTo(0.9, 16.0);
@@ -369,6 +382,7 @@ function drawSpaceship(ctx) {
 	  ctx.closePath();
 	  ctx.fill();
 	  ctx.stroke();
+	  ctx.restore();
 	}
 	
 	ctx.beginPath();
@@ -386,17 +400,28 @@ function drawAsteroids(ctx) {
 		var asteroid = asteroids[i];
 		ctx.save();
 		ctx.translate(asteroid[0], asteroid[1]);
+		ctx.rotate(asteroid[7]);
 		ctx.save();
 
 		ctx.beginPath();
-        ctx.moveTo(asteroid[4],0);
-		ctx.arc(0,0,asteroid[4],0,Math.PI*2,false);
-		ctx.stroke();
+        //ctx.moveTo(asteroid[4],0);
+		
+		for(var j=1; j<=7; j++){
+			th=j * 2 * Math.PI/7;
+			pentaX=asteroid[4]*Math.sin(th);
+			pentaY=-asteroid[4]*Math.cos(th);
+			ctx.lineTo(pentaX,pentaY);
+		 }
+		
+		
+		//ctx.arc(0,0,asteroid[4],0,Math.PI*2,false);
 		ctx.closePath();
+		
+		
 		if (asteroid[5] < 5) {
-			ctx.fillStyle = "rgba(240,240,240,0.8)";
+			ctx.fillStyle = "rgb(240,240,240)";
 		} else {
-			ctx.fillStyle = "rgba(120,120,120,0.8)";
+			ctx.fillStyle = "rgb(120,120,120)";
 		}
 		ctx.fill();
 		ctx.stroke();
