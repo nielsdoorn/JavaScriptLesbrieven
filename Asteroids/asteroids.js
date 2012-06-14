@@ -3,27 +3,51 @@ const BIG = 60;
 const SMALL = 10;
 
 // snelheidsfactor van de raketten
-const ROCKET_SPEED = 8;
+const ROCKET_SPEED = 6;
+// maximaal aantal raketten
+const MAX_ROCKETS = 20;
 
-const EXPLOSION_SPEED = 16;
+// explosion stuff
+const EXPLOSION_SPEED = 32;
+
+const EXPLOSION_LIFETIME = 40;
+
+const NUM_OF_PARTICLES = 20;
+
+// de versnelling bij pijltje omhoog
+const ACCELERATION = 0.09;
+
+// rotatie eenheden, hoeveel draai je als je pijljte indrukt
+const NORMAL_ROTATION = 0.03;
 
 // variabelen
 var canvas;
+
+// breedtw + hoogte van het canvas
+var maxWidth;
+
+var maxHeight;
+
+// spaceship vars
 // het x coordinaat van het ruimteschip
-var x = 400;
+var x;
 // het y coordinaat van het ruimteschip
-var y = 320;
-
-var spreads = 5;
-
+var y;
+// number of 360 spreads
+var spreads;
+// start health
+var health;
+// score
+var score;
 // richtingsvector spaceship
-var richtingsVector = [0.01, 0.4];
-
+var richtingsVector;
 // de hoek van het ruimteschip
-var rotation = 0;
+var rotation;
 
-// de versnelling bij pijltje omhoog
-var acceleration = 0.09;
+var rocketsFired;
+
+var stopFiring;
+
 
 // welke toets is ingedrukt?
 var up = false;
@@ -34,19 +58,32 @@ var space = false;
 var shift = false;
 
 // rockets: een lijst met afgevuurde raketten
-var rockets = [];
+var rockets;
 // explosion particles
 var explosions = [];
 // lijst met alle asteroids
-var asteroids = [];
+var asteroids;
 
-var health = 1000;
-var score = 0;
 
-function init() {	
-	console.log("init");	
+function init() {
+	// alles resetten
+	health = 1000;
+	spreads = 5;
+	score = 0;
+	rotation = 0;
+	richtingsVector = [0.01, 0.4];
+	rocketsFired = 0;
+	stopFiring = false;
+	rockets = [];
+
 	// canvas met het id "game" opvragen uit HTML
 	canvas = document.getElementById("game");
+
+	maxWidth = canvas.width;
+	maxHeight = canvas.height;
+	x = maxWidth / 2;
+	y = maxHeight / 2;
+
 	// pijltjestoetsen afhandeling regelen...
 	document.onkeydown = handleKeyDown;
 	document.onkeyup = handleKeyUp;
@@ -54,13 +91,13 @@ function init() {
 	// aanmaken van de grote asteroids
 	asteroids = [];
 	for (var i = 0; i < 5; i++) {
-		var asteroid = [Math.random() * 800,			// 0 = x positie
-						Math.random() * 640,			// 1 = y positie
+		var asteroid = [Math.random() * maxWidth,		// 0 = x positie
+						Math.random() * maxHeight,		// 1 = y positie
 						(Math.random() * 4) - 2,		// 2 = x vector
 						(Math.random() * 4) - 2,		// 3 = y vector
 						BIG,							// 4 = diameter
 						Math.random() * 30,				// 5 = sterkte
-						(Math.random() * 0.04) - 0.02,		// 6 = rotatie richting
+						(Math.random() * 0.04) - 0.02,	// 6 = rotatie richting
 						Math.random() * Math.PI * 2];	// 7 = rotatie
 		asteroids.push(asteroid);				
 	}
@@ -86,6 +123,27 @@ function initAnimation() {
 		moveRockets();
 		moveExplosions();
 		moveAsteroids();
+
+		if (asteroids.length > 100 && health > 0) {
+			score++;
+		}
+
+		
+		if (rocketsFired == MAX_ROCKETS) {
+			stopFiring = true;
+		} 
+
+		if (rocketsFired == 0) {
+			stopFiring = false;
+		}
+
+		if (space && health > 0 && !stopFiring) {
+			fire();
+		}
+		if (stopFiring) {
+			rocketsFired--;
+		}
+
 		detectCollisions();
 		cleanUp();
 		tekenScherm();
@@ -95,63 +153,48 @@ function initAnimation() {
 
 function moveShip() {
 	if (left) {
-		if (shift) {
-			rotation -= 0.1;
-		} else {
-			rotation -= 0.03;
-		}
+		rotation -= NORMAL_ROTATION;
 	} 
 	if (right) {
-		if (shift) {
-			rotation += 0.1;
-		} else {
-			rotation += 0.03;
-		}
+		rotation += NORMAL_ROTATION;
 	}
 	// de rotatie is altijd tussen de 0 en de 2 PI
 	// de modulo operator (%) zorgt hiervoor
 	rotation = rotation % (Math.PI * 2);
 	
+	// accelerate
 	if (up) {
 		beta = Math.PI - (Math.PI / 2) - rotation;
-		richtingsVector[0] += Math.sin(rotation) * acceleration;
-		richtingsVector[1] += Math.sin(beta) * acceleration;
+		richtingsVector[0] += Math.sin(rotation) * ACCELERATION;
+		richtingsVector[1] += Math.sin(beta) * ACCELERATION;
 	} 
-
-	if (space) {
-		//if (Math.round(Math.random() * 50) % 4 == 0) {
-			fire();
-		//}
-	}
 	
+	// move the ship
 	x += richtingsVector[0];
 	y -= richtingsVector[1];
 	
 	// het ruimteschip in beeld houden
 	if (x < 0) {
-		x = 800;
-	} else if (x > 800) {
+		x = maxWidth;
+	} else if (x > maxWidth) {
 		x = 0;
 	}
 	if (y < 0) {
-		y = 640;
-	} else if (y > 640) {
+		y = maxHeight;
+	} else if (y > maxHeight) {
 		y = 0;
 	}
 }
 
 function fire() {
-	if (rockets.length < 50 && health > 0) {
-		score--;
-		var rocketRotation = rotation + (Math.random() * 0.08) - 0.04;
-		var rocket = [x, y, rocketRotation, false];
-		rockets.push(rocket);
-	}
+	var rocket = [x, y, rotation, false];
+	rockets.push(rocket);
+	rocketsFired++;
 }
 
 function spread() {
-	if (health > 0) {
-		score -= 10000;
+	if (health > 0 && spreads > 0) {
+		spreads--;
 		for (var i=0; i < 100; i++) {
 			var rocketRotation = i * ((Math.PI * 2) / 100);
 			var rocket = [x, y, rocketRotation, false];
@@ -160,14 +203,11 @@ function spread() {
 	}
 }
 
-function explode(explosionX, explosionY) {
-	if (health > 0) {
-		var NUM_OF_PARTICLES = 20;
-		for (var i=0; i < NUM_OF_PARTICLES; i++) {
-			var explosionRotation = i * ((Math.PI * 2) / NUM_OF_PARTICLES);
-			var explosion = [explosionX, explosionY, explosionRotation, 40];
-			explosions.push(explosion);
-		}
+function explode(explosionX, explosionY, color) {
+	for (var i=0; i < NUM_OF_PARTICLES; i++) {
+		var explosionRotation = i * ((Math.PI * 2) / NUM_OF_PARTICLES);
+		var explosion = [explosionX, explosionY, explosionRotation, EXPLOSION_LIFETIME, color];
+		explosions.push(explosion);
 	}
 }
 
@@ -199,16 +239,18 @@ function moveAsteroids() {
 		var asteroid = asteroids[i];
 		asteroid[0] += asteroid[2];
 		asteroid[1] += asteroid[3];
-		if (asteroid[0] - asteroid[4] > 800) {
+		// keep asteroid on the canvas
+		if (asteroid[0] - asteroid[4] > maxWidth) {
 			asteroid[0] = 0;
 		} else if (asteroid[0] + asteroid[4] < 0) {
-			asteroid[0] = 800;
+			asteroid[0] = maxWidth;
 		}
-		if (asteroid[1] - asteroid[4] > 640) {
+		if (asteroid[1] - asteroid[4] > maxHeight) {
 			asteroid[1] = 0;
 		} else if (asteroid[1] + asteroid[4] < 0) {
-			asteroid[1] = 640;
+			asteroid[1] = maxHeight;
 		}
+		// rotate the asteroid
 		asteroid[7] += asteroid[6];
 		asteroid[7] = asteroid[7] % (Math.PI * 2);
 	}
@@ -218,16 +260,15 @@ function detectCollisions() {
 	var newAsteroids = [];
 	for (var i=0; i < asteroids.length; i++) {
 		var asteroid = asteroids[i];
-		
 		if (health > 0) {
 			var distanceToSpaceShip = distance(asteroid[0], asteroid[1], x, y);
 			if (distanceToSpaceShip < asteroid[4] + 10) {
 				health -= Math.round(asteroid[5] * 10);
 				asteroid[5]--;
-			} else if (distanceToSpaceShip < asteroid[4] + 20)  {
-				if (Math.round(Math.random() * 100) < 4) {
-					spread();
-				}
+				explode(x, y, [0, 200, 0]);
+			} 
+			if (health <= 0) {
+				explode(x, y, [255,0,255]);
 			}
 		}
 		
@@ -252,7 +293,7 @@ function cleanUp() {
 		if (asteroid[5] > 0) {
 			newAsteroids.push(asteroid);
 		} else {
-			explode(asteroid[0], asteroid[1]);
+			explode(asteroid[0], asteroid[1], [255,0,0]);
 			if (asteroid[4] == BIG) {
 				// voeg nieuwe, kleine asteroids toe
 				for (var j = 0; j < 40; j++) {
@@ -304,6 +345,9 @@ function tekenScherm() {
 	ctx.fillStyle = "white";
 	ctx.fillText("Score: " + score, 1, 10);
 	ctx.fillText("Health: " + health, 1, 20);
+	ctx.fillText("360 spreads left: " + spreads, 1, 30);
+	ctx.fillText("Rockets in air: " + rocketsFired, 1, 40);
+	ctx.fillText("Asteroids in air: " + asteroids.length, 1, 50);
 }
 
 function drawRockets(ctx) {
@@ -313,8 +357,8 @@ function drawRockets(ctx) {
 		ctx.fillStyle = "yellow";
 		ctx.translate(rocket[0], rocket[1]);
 		ctx.rotate(rocket[2]);
-		roundRect(ctx, -1, 0, 2, 14, 2);
-		//ctx.stroke();
+		ctx.translate(-2, -10);
+		roundRect(ctx, -1, 0, 4, 4, 2);
 		ctx.fill();
 		ctx.restore();
 	}
@@ -324,14 +368,15 @@ function drawExplosions(ctx) {
 	for (var i = 0; i < explosions.length; i++) {
 		var explosion = explosions[i];
 		ctx.save();
-		console.log((explosion[3] * (256 / 40)));
-		ctx.fillStyle = "rgb("+(Math.round(explosion[3] * (256 / 40))) +",0,0)";
+		var red = Math.round(explosion[3] * (explosion[4][0] / EXPLOSION_LIFETIME));
+		var green = Math.round(explosion[3] * (explosion[4][1] / EXPLOSION_LIFETIME));
+		var blue = Math.round(explosion[3] * (explosion[4][2] / EXPLOSION_LIFETIME));
+		ctx.fillStyle = "rgb("+red+","+green+","+blue+")";
 		ctx.translate(explosion[0], explosion[1]);
 		ctx.beginPath();
         ctx.moveTo(5,0);
 		ctx.arc(0,0,5,0,Math.PI*2,false);
 		ctx.closePath();
-		//ctx.stroke();
 		ctx.fill();
 		ctx.restore();
 	}
@@ -363,26 +408,26 @@ function drawSpaceship(ctx) {
 	
 	if (up) {
 		ctx.save();
-	  ctx.fillStyle = "white";
-	  ctx.strokeStyle = "white";
-	  ctx.beginPath();
-	  ctx.moveTo(2.8, 19.4);
-	  ctx.lineTo(0.9, 16.0);
-	  ctx.lineTo(4.7, 16.0);
-	  ctx.lineTo(2.8, 19.4);
-	  ctx.closePath();
-	  ctx.fill();
-	  ctx.stroke();
+		ctx.fillStyle = "white";
+		ctx.strokeStyle = "white";
+		ctx.beginPath();
+		ctx.moveTo(2.8, 19.4);
+		ctx.lineTo(0.9, 16.0);
+		ctx.lineTo(4.7, 16.0);
+		ctx.lineTo(2.8, 19.4);
+		ctx.closePath();
+		ctx.fill();
+		ctx.stroke();
 
-	  ctx.beginPath();
-	  ctx.moveTo(16.3, 19.4);
-	  ctx.lineTo(14.4, 16.0);
-	  ctx.lineTo(18.3, 16.0);
-	  ctx.lineTo(16.3, 19.4);
-	  ctx.closePath();
-	  ctx.fill();
-	  ctx.stroke();
-	  ctx.restore();
+		ctx.beginPath();
+		ctx.moveTo(16.3, 19.4);
+		ctx.lineTo(14.4, 16.0);
+		ctx.lineTo(18.3, 16.0);
+		ctx.lineTo(16.3, 19.4);
+		ctx.closePath();
+		ctx.fill();
+		ctx.stroke();
+		ctx.restore();
 	}
 	
 	ctx.beginPath();
@@ -404,7 +449,6 @@ function drawAsteroids(ctx) {
 		ctx.save();
 
 		ctx.beginPath();
-        //ctx.moveTo(asteroid[4],0);
 		
 		for(var j=1; j<=7; j++){
 			th=j * 2 * Math.PI/7;
@@ -413,10 +457,7 @@ function drawAsteroids(ctx) {
 			ctx.lineTo(pentaX,pentaY);
 		 }
 		
-		
-		//ctx.arc(0,0,asteroid[4],0,Math.PI*2,false);
 		ctx.closePath();
-		
 		
 		if (asteroid[5] < 5) {
 			ctx.fillStyle = "rgb(240,240,240)";
@@ -455,7 +496,10 @@ function handleKeyDown(evt) {
 			break;	
 		case 17:		// ctrl
 			spread();
-			break;	
+			break;
+		case 13: 		// enter
+			init();
+			break;
     }
 }
 
@@ -477,6 +521,7 @@ function handleKeyUp(evt) {
 			break;	
 		case 32:		// spatie
 			space = false;
+			rocketsFired = 0;
 			break;
 		case 16:		// shift
 			shift = false;
@@ -485,6 +530,7 @@ function handleKeyUp(evt) {
 }
 
 function distance(x1, y1, x2, y2) {
+	// stelling van pythagoras a^2 = b^2 + c^2
 	var a = Math.abs(x1 - x2);
 	var b = Math.abs(y1 - y2);
 	var c = Math.sqrt(Math.pow(a,2) + Math.pow(b,2));
