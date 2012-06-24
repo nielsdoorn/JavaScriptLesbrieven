@@ -1,0 +1,16 @@
+@charset "UTF-8";
+/* CSS Document */
+html {
+	background: black;
+	min-height: 100%;
+}
+
+#container {
+	width: 870px;
+	margin-left: auto;
+	margin-right: auto;
+}
+#game {
+	width: 800px;
+	height: 640px;
+}
