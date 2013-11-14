@@ -1,0 +1,116 @@
+\documentclass[a4paper]{report}
+
+\usepackage{NielsPackage}
+
+\lstset{language=HTML}
+
+\hypersetup{
+	pdfauthor = {Niels Doorn},
+	pdftitle = {Javascript Lesbrief 3},
+	pdfsubject = {HTML, CSS, JavaScript},
+	pdfkeywords = {HTML,css,lesbrief},
+	pdfcreator = {NielsDoorn/RocVanTwente}
+}
+
+\rhead{\textsc{Javascript Lesbrief 3}}
+\lhead{}
+\chead{}
+\lfoot{Niels Doorn \copyright~2013}
+\cfoot{}
+\rfoot{\thepage}
+
+\fancypagestyle{plain}{
+	\fancyhf{}
+	\fancyfoot[L]{Niels Doorn \copyright~2013}
+	\fancyfoot[C]{}
+	\fancyfoot[R]{\thepage}
+	\renewcommand{\headrulewidth}{0pt}
+	\renewcommand{\footrulewidth}{0.4pt}
+}
+
+\begin{document}
+
+\chapter*{\textcolor{seccol}{Javascript} Lesbrief 3}
+
+\section*{Beoordeling}
+Deze lesbrief bestaat uit een aantal vragen en opdrachten. Deze vragen moet je in een document beantwoorden en samen met de uitwerkingen van de opdrachten af laten tekenen door de docent. Voor de eindopdracht krijg je een cijfer.
+
+\section*{Canvas}
+Een van de nieuwe HTML5 elementen is het canvas. Een canvas kun je gebruiken om op te tekenen, bitmapafbeeldingen te laten zien, maar ook om mee te animeren en dus ook om spelletjes te maken.
+
+\subsection*{Opdracht 1: theorie}
+Lees hoofdstuk 7 van het boek door en beantwoord de volgende vragen. Je hoeft de ``Tweetshirt'' site niet te maken, het mag natuurlijk wel. Het gaat met name om de manier waarop de HTML Canvas tag werkt en hoe je door middel van JavaScript kunt tekenen op een canvas.
+
+\begin{enumerate}
+	\item Ga op zoek naar websites die een canvas gebruiken, noem er drie (schrijf het webadres op).
+	\item Welke technieken heb je allemaal nodig om op een canvas te kunnen tekenen?
+	\item Wat doet de code \texttt{canvas.getContext("2d")}?
+	\item Met welke functie kun je een rechthoek tekenen?
+	\item Met welke functie kun je een gekleurde (gevulde)  rechthoek tekenen?
+	\item Hoe verander je de kleur die gebruikt moet worden om een rechthoek te vullen?
+\end{enumerate}
+
+\subsection*{Opdracht 2: Canvas basis}
+Maak de volgende opdrachten. Je hebt hiervoor een HTML, CSS en JavaScript bestand nodig
+
+\begin{itemize}
+	\item Maak een webpagina met daarop een canvas van 800 bij 600 pixels. 
+	\item Teken daar een rechthoek op van 100px breed en 200px hoog.
+	\item Teken ook een blauw rechthoek van 200px breed en 100px hoog.
+	\item Teken een cirkel met een doorsnede van 100px.
+	\item Schrijf de tekst ``Canvas in action!'' op het canvas.
+\end{itemize}
+
+\subsection*{Opdracht 3: Canvas animeren}
+Beantwoord de volgende vragen:
+
+\begin{enumerate}
+	\item Hoe maak je (een deel van) een canvas weer leeg (met welke functie\footnote{Staat niet in het boek, het Mozilla Developer Network is een goede plaats om te zoeken})?
+	\item Hoe kun je ervoor zorgen dat je op een canvas kunt animeren\footnote{staat niet in het boek, zoek op internet of vraag de docent}?
+	\item Beschrijf welke stappen een JavaScript programma moet uitvoeren om een animatie te maken.
+\end{enumerate}
+
+\noindent Animeren van het canvas staat niet in het boek maar is wel een super manier om het Canvas te gebruiken!
+
+\subsection*{Opdracht 4: Stuiterbal}
+Maak de volgende opdrachten. Je hebt hiervoor een HTML, CSS en JavaScript bestand nodig.
+
+\begin{itemize}
+	\item Maak een webpagina met daarop een canvas. 
+	\item je mag zelf bepalen hoe groot je canvas is.
+	\item Zorg ervoor dat d.m.v. een animatieloop het canvas ieder frame leeg wordt gemaakt
+	\item Teken ieder frame een rode crikel van 20px doorsnede.
+	\item Zorg ervoor dat de cirkel automatisch van boven naar beneden beweegt.
+	\item Als de cirkel helemaal beneden is moet de cirkel weer naar boven bewegen.
+	\item Bonus: zorg ervoor dat het bolletje op de plaats van de muispointer wordt getekend.
+\end{itemize}
+
+\subsection*{Eindopdracht: Maanlander}
+Maak een nieuwe webpagina met daarop een op een canvas getekende raket die je met je toetsenbord kunt besturen.
+\\
+\\
+\noindent De raket moet kunnen:
+\begin{enumerate}
+	\item Vliegen in all richtingen.	(40pt)
+	\item Binnen het canvas blijven. (20pt)
+	\item Kunnen sturen. (20pt)
+	\item Eventueel andere fancy dingen kunnen doen zoals: neerstorten, ontploffen, botsen  (10pt)
+	\item Maak een website om je canvas heen geheel in de stijl van het door jou gemaakte spel (10pt)
+\end{enumerate}
+
+\noindent Bonus: bouw zwaartekracht in zodat je de raket kunt laten landen. Als je te hard land, crash je.
+\\
+\\
+\noindent Je hebt hiervoor nodig:
+\begin{itemize}
+	\item HTML, CSS en JavaScript\footnote{Je mag alleen puur JavaScript gebruiken, geen bibliotheken zoals jQuery}
+	\item Een canvas.
+	\item Het afvangen van toetsenbord events\footnote{Hoofdstuk 3 van het boek en ook de samenvatting van \url{nielsdoorn.nl}}.
+	\item Een animatie loop.
+	\item Geduld.
+	\item Doorzettingsvermogen.
+\end{itemize}
+
+\noindent Heb je zelf andere idee\"en voor een spel, leg het voor aan de docent ter goedkeuring!
+
+\end{document}
