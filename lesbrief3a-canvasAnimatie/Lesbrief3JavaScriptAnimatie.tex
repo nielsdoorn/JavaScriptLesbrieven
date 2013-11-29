@@ -1,0 +1,85 @@
+\documentclass[a4paper]{report}
+
+\usepackage{NielsPackage}
+
+\lstset{language=HTML}
+
+\hypersetup{
+	pdfauthor = {Niels Doorn},
+	pdftitle = {Javascript Lesbrief 3a},
+	pdfsubject = {HTML, CSS, JavaScript},
+	pdfkeywords = {HTML,css,lesbrief},
+	pdfcreator = {NielsDoorn/RocVanTwente}
+}
+
+\rhead{\textsc{Javascript Lesbrief 3a Canvas Animatie}}
+\lhead{}
+\chead{}
+\lfoot{Niels Doorn \copyright~2013}
+\cfoot{}
+\rfoot{\thepage}
+
+\fancypagestyle{plain}{
+	\fancyhf{}
+	\fancyfoot[L]{Niels Doorn \copyright~2013}
+	\fancyfoot[C]{}
+	\fancyfoot[R]{\thepage}
+	\renewcommand{\headrulewidth}{0pt}
+	\renewcommand{\footrulewidth}{0.4pt}
+}
+
+\begin{document}
+
+\chapter*{\textcolor{seccol}{Javascript} Lesbrief 3a -- Canvas Animatie}
+
+\section*{Animatie van het canvas}
+Deze lesbrief bevat achtergrond informatie voor het animeren van een canvas.
+
+Een canvas animeren kan met behulp van JavaScript met een speciale functie, \texttt{requestAnimationFrame}. Deze functie zorgt er voor dat je een eigen functie aan kunt laten roepen met een bepaalde frequentie, bijvoorbeeld 60 keer per seconde.
+
+Op deze manier is het mogelijk om animaties of spoelletjes te maken. Je hebt volledige controle over wat er gebeurt op het canvas, maar over het algemeen maak je het canvas leeg met de \texttt{clearRect} functie en teken je daarna het nieuwe frame.
+
+\section*{RequestAnimationFrame functie}
+Onderstaande code is de basis om een canvas te animeren. Je hoeft niet helemaal te begrijpen hoe dit werkt om het te kunnen gebruiken. Het is deels copy-paste code.
+
+\begin{lstlisting}
+function initAnimation() {
+  // vraag aan de browser om maximaal 60 fps te animeren
+  window.looper = (function(callback){
+    return window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.oRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
+    function(callback){ 
+      window.setTimeout(callback, 1000 / 60);
+    };
+  })();
+  
+  (function animatieLoop(){
+    looper(animatieLoop); 
+    tekenFrame();
+  })();
+}
+
+
+// het tekenen van het scherm
+function tekenFrame() {
+  var ctx = canvas.getContext("2d");
+  // 2d context leeg maken, het canvas is 800px breed en 640px hoog
+  ctx.clearRect(0, 0, 800, 640);
+  // vierkantje tekenen
+  ctx.fillRect(x, y, 10, 10);
+}
+\end{lstlisting}
+
+\noindent De \texttt{requestAnimationFrame} functie is een experimentele JavaScript functie die nog niet in de JavaScript standaard is opgenomen. Daarom moeten we browserspecifieke functies aanroepen. Hierdoor wordt de code een stuk langer dan we zouden willen maar eigenlijk gebeuren er de volgende dingen in de code:
+\begin{itemize}
+	\item We hebben een functie \texttt{initAnimation} gemaakt die het meeste werk voor ons doet
+	\item Die functie bepaald welke \texttt{requestAnimationFrame} functie we aan kunnen roepen (afhankelijk van de browser)
+	\item De juiste functie wordt aan de \texttt{window.looper} functie gekoppeld (een door ons gedefinieerde functie)
+	\item Vervolgens roepen we deze functie \texttt{looper} functie aan en geven aan dat deze functie de \texttt{animatieLoop} functie aan moet roepen.
+	\item De \texttt{animatieLoop} functie roept de \texttt{tekenFrame} functie aan die het frame opnieuw gaat tekenen.
+\end{itemize}
+
+\end{document}
